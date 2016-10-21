@@ -1,0 +1,22 @@
+<launch>
+	<node pkg="arcaa_uaviz" type="arcaa_uaviz_node" name="uaviz" clear_params="true" output="screen">
+		<!-- Connection Parameters -->
+		<param name="vicon_frame" value="/world" type="str"/>
+		<param name="uav_frame" value="/uav/att_link" type="str"/>
+		<param name="pub_rate" value="1.0" type="double"/>
+
+		<!-- UAV model type /-->
+		<!-- Valid choices: X4, (Others later on...) /-->
+		<param name="uav_type" value="X4" type="str" />
+
+		<!-- UAV model scale /-->
+		<!-- Scale of 1.0 == 1m /-->
+		<param name="uav_scale" value="0.225" type="double" />
+		<param name="uav_rotor_scale" value="0.1" type="double" />
+
+		<!-- Path travelled visualization /-->
+		<!-- Set to -1 for infinite path /-->
+		<!-- Set to 0 for no path /-->
+		<param name="path_length" value="True" type="bool" />
+	</node>
+</launch>
