@@ -3,7 +3,7 @@
 #include "visualization_msgs/MarkerArray.h"
 
 #include <string>
-#include <math>
+#include <math.h>
 
 int main( int argc, char **argv ) {
 	ros::init( argc, argv, "uaviz" );
@@ -13,7 +13,7 @@ int main( int argc, char **argv ) {
 	std::string param_uav_frame = "uav";
 	double param_pub_rate = 1.0;
 	std::string param_uav_type = "X4";
-	double param_uav_scale = 1.0;
+	double param_uav_scale = 0.25;	//0.5m span
 	double param_uav_rotor_scale = 0.2;
 
 	ros::Rate loop_rate( param_pub_rate );
@@ -30,7 +30,7 @@ int main( int argc, char **argv ) {
 	marker_floor.id = 0;
 	marker_floor.type = visualization_msgs::Marker::CUBE;
 	marker_floor.action = visualization_msgs::Marker::ADD;
-	marker_floor.lifetime = 0.0;
+	marker_floor.lifetime = ros::Duration(0.0);
 	marker_floor.frame_locked = true;
 	//Pose
 	marker_floor.pose.position.x = 0.0;
@@ -63,7 +63,7 @@ int main( int argc, char **argv ) {
 	marker_wall_a.id = 1;
 	marker_wall_a.type = visualization_msgs::Marker::CUBE;
 	marker_wall_a.action = visualization_msgs::Marker::ADD;
-	marker_wall_a.lifetime = 0.0;
+	marker_wall_a.lifetime = ros::Duration( 0.0 );
 	marker_wall_a.frame_locked = true;
 	//Pose
 	marker_wall_a.pose.position.x = 2.05;
@@ -95,8 +95,8 @@ int main( int argc, char **argv ) {
 	marker_wall_c.pose.position.x = -2.05;
 	//Repeat D
 	marker_wall_d = marker_wall_b;	//Copy wall B
-	marker_wall_c.id = 4;
-	marker_wall_c.pose.position.y = -2.05;
+	marker_wall_d.id = 4;
+	marker_wall_d.pose.position.y = -2.05;
 
 
 	//== UAV Markers
@@ -111,12 +111,12 @@ int main( int argc, char **argv ) {
 	marker_uav_frame.id = 0;
 	marker_uav_frame.type = visualization_msgs::Marker::CYLINDER;
 	marker_uav_frame.action = visualization_msgs::Marker::ADD;
-	marker_uav_frame.lifetime = 0.0;
+	marker_uav_frame.lifetime = ros::Duration( 0.0 );
 	marker_uav_frame.frame_locked = true;
 	//Pose
-	marker_uav_frame.pose.position.x = pox_x;
-	marker_uav_frame.pose.position.y = pox_y;
-	marker_uav_frame.pose.position.z = 0.075;
+	marker_uav_frame.pose.position.x = 0.0;
+	marker_uav_frame.pose.position.y = 0.0;
+	marker_uav_frame.pose.position.z = 0.0;
 	marker_uav_frame.pose.orientation.x = 0.0;
 	marker_uav_frame.pose.orientation.y = 0.0;
 	marker_uav_frame.pose.orientation.z = 0.0;
@@ -150,7 +150,7 @@ int main( int argc, char **argv ) {
 			arm.id = i;
 			arm.type = visualization_msgs::Marker::CYLINDER;
 			arm.action = visualization_msgs::Marker::ADD;
-			arm.lifetime = 0.0;
+			arm.lifetime = ros::Duration(0.0);
 			arm.frame_locked = true;
 			//Pose
 			arm.pose.position.x = pox_x;
@@ -187,14 +187,14 @@ int main( int argc, char **argv ) {
 			//Marker
 			rotor.ns = "uav_rotors";
 			rotor.id = i;
-			rotor.type = visualization_msgs::Marker::CUBE;
+			rotor.type = visualization_msgs::Marker::CYLINDER;
 			rotor.action = visualization_msgs::Marker::ADD;
-			rotor.lifetime = 0.0;
+			rotor.lifetime = ros::Duration( 0.0 );
 			rotor.frame_locked = true;
 			//Pose
 			rotor.pose.position.x = pox_x;
 			rotor.pose.position.y = pox_y;
-			rotor.pose.position.z = 0.075;
+			rotor.pose.position.z = 0.03;
 			rotor.pose.orientation.x = 0.0;
 			rotor.pose.orientation.y = 0.0;
 			rotor.pose.orientation.z = 0.0;
@@ -202,7 +202,7 @@ int main( int argc, char **argv ) {
 			//Scale
 			rotor.scale.x = param_uav_rotor_scale;
 			rotor.scale.y = param_uav_rotor_scale;
-			rotor.scale.z = 0.05;
+			rotor.scale.z = 0.01;
 			//Color
 			rotor.color.a = 0.5;
 			rotor.color.r = 0.8;
@@ -210,11 +210,11 @@ int main( int argc, char **argv ) {
 			rotor.color.b = 0.8;
 
 			//Add rotor to the array
-			marker_uav_rotors.markers.push_back(rotor);
+			marker_uav_rotors.markers.push_back( rotor );
 		}
 
 	} else {
-		ROS_ERROR( "Unsupported frame type: %s", param_uav_type.c_str() )
+		ROS_ERROR( "Unsupported frame type: %s", param_uav_type.c_str() );
 		ros::shutdown();
 	}
 
@@ -241,13 +241,13 @@ int main( int argc, char **argv ) {
 		marker_uav_frame.header.seq++;
 
 		/*TODO:
-		for( int i = 0; i < marker_uav_arms.size(); i++ ) {
+		for( int i = 0; i < marker_uav_arms.markers.size(); i++ ) {
 			marker_uav_arms.markers.at(i).header.stamp = timestamp;
 			marker_uav_arms.markers.at(i).header.seq++;
 		}
 		*/
 
-		for( int i = 0; i < marker_uav_rotors.size(); i++ ) {
+		for( int i = 0; i < marker_uav_rotors.markers.size(); i++ ) {
 			marker_uav_rotors.markers.at(i).header.stamp = timestamp;
 			marker_uav_rotors.markers.at(i).header.seq++;
 		}
