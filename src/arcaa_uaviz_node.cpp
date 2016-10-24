@@ -1,9 +1,30 @@
 #include "ros/ros.h"
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
+#include "geometry_msgs/Quaternion.h"
+#include "geometry_msgs/Vector3.h"
 
 #include <string>
 #include <math.h>
+
+
+geometry_msgs::Quaternion toQuaternion(geometry_msgs::Vector3 e) {
+    geometry_msgs::Quaternion q;
+
+    double t0 = cos(e.z * 0.5);
+    double t1 = sin(e.z * 0.5);
+    double t2 = cos(e.x * 0.5);
+    double t3 = sin(e.x * 0.5);
+    double t4 = cos(e.y * 0.5);
+    double t5 = sin(e.y * 0.5);
+
+    q.w = t2 * t4 * t0 + t3 * t5 * t1;
+    q.x = t3 * t4 * t0 - t2 * t5 * t1;
+    q.y = t2 * t5 * t0 + t3 * t4 * t1;
+    q.z = t2 * t4 * t1 - t3 * t5 * t0;
+
+	return q;
+}
 
 int main( int argc, char **argv ) {
 	ros::init( argc, argv, "uaviz" );
@@ -101,7 +122,7 @@ int main( int argc, char **argv ) {
 
 	//== UAV Markers
 	visualization_msgs::Marker marker_uav_frame;
-	//TODO: visualization_msgs::MarkerArray marker_uav_arms;
+	visualization_msgs::MarkerArray marker_uav_arms;
 	visualization_msgs::MarkerArray marker_uav_rotors;
 	//Frame
 	//Header
@@ -134,7 +155,7 @@ int main( int argc, char **argv ) {
 
 	if ( param_uav_type.compare( "X4" ) == 0 ) {
 		double step_size = 2 * M_PI / 4;
-		/* TODO:
+
 		//Arms
 		for( int i = 0; i < 4; i++ ) {
 			//Rotate an X unit vector by rot, scaled by the arm length
@@ -156,10 +177,9 @@ int main( int argc, char **argv ) {
 			arm.pose.position.x = pox_x;
 			arm.pose.position.y = pox_y;
 			arm.pose.position.z = 0.075;
-			arm.pose.orientation.x = 0.0;
-			arm.pose.orientation.y = sqrt( 2.0 );	//TODO: RPY would be better
-			arm.pose.orientation.z = 0.0;
-			arm.pose.orientation.w = sqrt( 2.0 );
+			geometry_msgs::Quaternion armHeading;
+			armHeading.z = rot;
+			arm.pose.orientation = toQuaternion(rot);
 			//Scale
 			arm.scale.x = 0.05;
 			arm.scale.y = 0.05;
@@ -172,7 +192,7 @@ int main( int argc, char **argv ) {
 
 			//Add arm to the array
 			marker_uav_arms.markers.push_back(arm);
-		}*/
+		}
 
 		//Rotors
 		for( int i = 0; i < 4; i++ ) {

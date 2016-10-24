@@ -7,6 +7,7 @@ project(arcaa_uaviz)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   visualization_msgs
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
