@@ -8,7 +8,7 @@
 #include <math.h>
 
 
-geometry_msgs::Quaternion toQuaternion(geometry_msgs::Vector3 e) {
+geometry_msgs::Quaternion toQuaternion( geometry_msgs::Vector3 e ) {
     geometry_msgs::Quaternion q;
 
     double t0 = cos(e.z * 0.5);
@@ -152,12 +152,34 @@ int main( int argc, char **argv ) {
 	marker_uav_frame.color.g = 1.0;
 	marker_uav_frame.color.b = 1.0;
 
+	//TODO: Should probably break this into a few statements to handle different frame configurations, with different amounts of rotors
+	if ( param_uav_type.at(0) == 'X' ) {
+		int numProps = 0;
 
-	if ( param_uav_type.compare( "X4" ) == 0 ) {
-		double step_size = 2 * M_PI / 4;
+		switch( param_uav_type.at(1) ) {
+			case '4':
+				numProps = 4;
+				break;
+			case '6':
+				numProps = 6;
+				break;
+			case '8':
+				numProps = 8;
+				break;
+			default:
+				numProps = 0;
+				break;
+		}
+
+		if( numProps == 0 ) {
+			ROS_ERROR( "Unsupported number of props for frame type: %s", param_uav_type.c_str() );
+			ros::shutdown();
+		}
+
+		double step_size = 2 * M_PI / numProps;
 
 		//Arms
-		for( int i = 0; i < 4; i++ ) {
+		for( int i = 0; i < numProps; i++ ) {
 			//Rotate an X unit vector by rot, scaled by the arm length
 			double rot = ( i * step_size ) + (step_size / 2.0);
 			double pox_x = ( param_uav_scale / 2.0 ) * std::cos( rot ); //No Y axis element in a X unit vector
@@ -196,7 +218,7 @@ int main( int argc, char **argv ) {
 		}
 
 		//Rotors
-		for( int i = 0; i < 4; i++ ) {
+		for( int i = 0; i < numProps; i++ ) {
 			//Rotate an X unit vector by rot, scaled by the arm length
 			double rot = ( i * step_size ) + (step_size / 2.0);
 			double pox_x = param_uav_scale * std::cos( rot ); //No Y axis element in a X unit vector
@@ -233,7 +255,6 @@ int main( int argc, char **argv ) {
 			//Add rotor to the array
 			marker_uav_rotors.markers.push_back( rotor );
 		}
-
 	} else {
 		ROS_ERROR( "Unsupported frame type: %s", param_uav_type.c_str() );
 		ros::shutdown();
