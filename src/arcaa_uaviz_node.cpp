@@ -176,16 +176,17 @@ int main( int argc, char **argv ) {
 			//Pose
 			arm.pose.position.x = pox_x;
 			arm.pose.position.y = pox_y;
-			arm.pose.position.z = 0.075;
+			arm.pose.position.z = 0.0;
 			geometry_msgs::Vector3 armHeading;
+			armHeading.y = M_PI/2;
 			armHeading.z = rot;
 			arm.pose.orientation = toQuaternion(armHeading);
 			//Scale
-			arm.scale.x = 0.05;
-			arm.scale.y = 0.05;
+			arm.scale.x = 0.025;
+			arm.scale.y = 0.025;
 			arm.scale.z = param_uav_scale;
 			//Color
-			arm.color.a = 0.5;
+			arm.color.a = 1.0;
 			arm.color.r = 0.8;
 			arm.color.g = 0.8;
 			arm.color.b = 0.8;
@@ -260,12 +261,10 @@ int main( int argc, char **argv ) {
 		marker_uav_frame.header.stamp = timestamp;
 		marker_uav_frame.header.seq++;
 
-		/*TODO:
 		for( int i = 0; i < marker_uav_arms.markers.size(); i++ ) {
 			marker_uav_arms.markers.at(i).header.stamp = timestamp;
 			marker_uav_arms.markers.at(i).header.seq++;
 		}
-		*/
 
 		for( int i = 0; i < marker_uav_rotors.markers.size(); i++ ) {
 			marker_uav_rotors.markers.at(i).header.stamp = timestamp;
@@ -280,7 +279,7 @@ int main( int argc, char **argv ) {
 		marker_pub.publish( marker_wall_d );
 
 		marker_pub.publish( marker_uav_frame );
-		//marker_array_pub.publish( marker_uav_arms );
+		marker_array_pub.publish( marker_uav_arms );
 		marker_array_pub.publish( marker_uav_rotors );
 
 		ros::spinOnce();
