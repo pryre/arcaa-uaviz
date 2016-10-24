@@ -177,9 +177,9 @@ int main( int argc, char **argv ) {
 			arm.pose.position.x = pox_x;
 			arm.pose.position.y = pox_y;
 			arm.pose.position.z = 0.075;
-			geometry_msgs::Quaternion armHeading;
+			geometry_msgs::Vector3 armHeading;
 			armHeading.z = rot;
-			arm.pose.orientation = toQuaternion(rot);
+			arm.pose.orientation = toQuaternion(armHeading);
 			//Scale
 			arm.scale.x = 0.05;
 			arm.scale.y = 0.05;
